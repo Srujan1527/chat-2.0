@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
 import localStorage from "localStorage";
-import { useForm } from "react-hook-form";
+import { useSelector ,useDispatch} from "react-redux";
+// import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
+import { createUserMessageDocumentFromAuth } from "../firebase/firebase";
+
+
 
 function Message() {
   const [message, setMessage] = useState("");
   const [arrayData, setArrayData] = useState([] as any);
+  const user=useSelector((state:any)=>state.user )
+  // const token=useSelector((state:any)=>state.token)
   const router = useRouter();
   // const [resultArray,setResultArray]=useState([])
   useEffect(() => {
@@ -15,9 +21,16 @@ function Message() {
     };
     getResultFromStorage();
   }, []);
-
-  const sendMessage = (e: any) => {
+ 
+  const sendMessage = async(e: any) => {
     e.preventDefault();
+    const newMessage = {
+      text: message,
+      createdAt: new Date(),
+      email: user.user.uid,
+    };
+    await createUserMessageDocumentFromAuth(user,newMessage)
+    console.log("message document created")
     setArrayData([...arrayData, message]);
     const localData = localStorage.setItem(
       "message",
@@ -31,7 +44,7 @@ function Message() {
     router.reload();
   };
 
-  https: return (
+  return (
     <div className="bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% overflow-auto h-screen w-full">
       <div className="flex justify-center items-center">
         <h1 className="text-white hover:text-red-700 hover:my-8 text-center font-serif font-extrabold relative">
