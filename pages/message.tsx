@@ -5,16 +5,25 @@ import { useRouter } from "next/router";
 
 function Message() {
   const [message, setMessage] = useState("");
-  const [arrayData, setArrayData] = useState([] as any);
+  const [arrayData, setArrayData] = useState(
+    JSON.parse(localStorage.getItem("message")) || []
+  );
+  // const localStorageData = localStorage.setItem("mainStorage", arrayData);
+  // const getLocalStorageData = [
+  //   JSON.stringify(localStorage.getItem("mainStorage")),
+  // ];
+
   const router = useRouter();
   // const [resultArray,setResultArray]=useState([])
-  useEffect(() => {
-    const getResultFromStorage = () => {
-      const storedMessages = JSON.parse(localStorage.getItem("message")) || [];
-      setArrayData(storedMessages);
-    };
-    getResultFromStorage();
-  }, []);
+
+  // useEffect(() => {
+  //   const getResultFromStorage = () => {
+  //     const storedMessages = JSON.parse(localStorage.getItem("message")) || [];
+  //     setArrayData(storedMessages);
+  //     return storedMessages;
+  //   };
+  //   getResultFromStorage();
+  // });
 
   const sendMessage = (e: any) => {
     e.preventDefault();
@@ -24,6 +33,10 @@ function Message() {
       JSON.stringify([...arrayData, message])
     );
     setMessage("");
+
+    // const setLocalData = localStorage.setItem(e.tostring(), e);
+    // const getLocalData = JSON.stringify(localStorage.getItem(e));
+    // console.log(getLocalData);
   };
 
   const handleDelete = () => {
@@ -45,7 +58,7 @@ function Message() {
         </button>
       </div>
       <ul className="w-full">
-        {arrayData.map((each, index) => (
+        {arrayData.map((each: any, index: any) => (
           <li key={index}>
             <div className="text-white   break-words font-bold hover:text-red-950 hover:px-10 bg-transparent border-2 hover:border-black rounded-lg  mx-4  hover:border-dotted  border-white px-2 my-1">
               {each}
