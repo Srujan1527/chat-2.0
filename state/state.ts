@@ -4,10 +4,11 @@ type userObj={
   
         user: null | Object,
         token: null | String,
-        posts: [] ,
+        messages: [] ,
         errorMsg: null| String,
         isError: false | Boolean,
         successMsg: null | String,
+        receiverMail:null|String
         // allComments: [],
         // postComments:[]
       
@@ -16,10 +17,11 @@ type userObj={
 const initialState:userObj = {
   user: null,
   token: null,
-  posts: [],
+  messages: [],
   errorMsg: null,
   isError: false,
   successMsg: null,
+  receiverMail:null
   // allComments: [],
   // postComments:[]
 };
@@ -37,7 +39,11 @@ export const authSlice = createSlice({
       state.token = null;
       state.errorMsg = null;
       state.isError = false;
-      state.posts = [];
+      state.messages = [];
+      state.receiverMail=null
+    },
+    setReceiverMail:(state,action)=>{
+      state.receiverMail=action.payload.email
     },
     setError: (state, action) => {
       state.errorMsg = action.payload.errorMsg;
@@ -51,8 +57,8 @@ export const authSlice = createSlice({
     setNotIsError: (state) => {
       state.isError = false;
     },
-    setPosts: (state, action) => {
-      state.posts = action.payload.posts;
+    setMessages: (state, action) => {
+      state.messages = action.payload.messages;
     },
     // setAllComments: (state, action) => {
     //   state.allComments=action.payload.comments
@@ -75,15 +81,11 @@ export const {
   setError,
   setIsError,
   setNotIsError,
-  setPosts,
+  setMessages,
   setSuccessMsg,
+  setReceiverMail
   // setAllComments,
   // setPostComments,
 } = authSlice.actions;
 export default authSlice.reducer;
 
-export const store = configureStore({
-    reducer: {
-      user: authSlice.reducer,
-    },
-  });

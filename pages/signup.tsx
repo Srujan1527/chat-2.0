@@ -65,18 +65,20 @@ const SignUp = () => {
     }
   };
   return (
-    <div data-testid="sign-up" className="sign-up-container">
-      <form className="sign-up-form-container">
+    <div data-testid="sign-up" className="min-h-screen ">
+      <form className="border-2 w-full  h-screen flex justify-center flex-col items-center">
+        <div className="w-1/2 border-2 p-4 rounded-lg ">
+
         <div className="heading-container">
-          <h2 className="heading">Don't have an account</h2>
-          <span className="span-heading">Sign up with your email</span>
+          <h2 className="mt-4 mb-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Don't have an account</h2>
+          <span className="mt-4 ml-8  mb-14 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign up with your email</span>
         </div>
-        <div className="input-container">
-          <label htmlFor="name" className="label">
+        <div className="mb-4 ml-8">
+          <label htmlFor="name"className="block text-sm font-medium leading-6 text-gray-900">
             Name
           </label>
           <input
-            className="input"
+            className="block  p-2 w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
            
             type="text"
             id="name"
@@ -87,13 +89,13 @@ const SignUp = () => {
             value={displayName}
           />
         </div>
-        <div className="input-container">
-          <label htmlFor="email" className="label">
+        <div className="mb-4 ml-8">
+          <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
             Email
           </label>
           <input
             
-            className="input"
+            className="block  p-2 w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             type="email"
             required
             id="email"
@@ -104,12 +106,12 @@ const SignUp = () => {
           />
         </div>
 
-        <div className="input-container">
-          <label htmlFor="password" className="label">
+        <div className="mb-4 ml-8">
+          <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
             Password
           </label>
           <input
-            className="input"
+            className="block  p-2 w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             
             type="password"
             required
@@ -120,13 +122,13 @@ const SignUp = () => {
             value={password}
           />
         </div>
-        <div className="input-container">
-          <label htmlFor="c-password" className="label">
+        <div className="mb-4 ml-8">
+          <label htmlFor="c-password" className="block text-sm font-medium leading-6 text-gray-900">
             Confirm Password
           </label>
           <input
           
-            className="input"
+          className="block  p-2 w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             type="password"
             required
             id="c-password"
@@ -136,13 +138,13 @@ const SignUp = () => {
             value={confirmPassword}
           />
         </div>
-        <div className="input-container">
-          <label htmlFor="phoneNumber" className="label">
+        <div className="mb-4 ml-8">
+          <label htmlFor="phoneNumber"className="block text-sm font-medium leading-6 text-gray-900">
             PhoneNumber
           </label>
           <input
         
-            className="input"
+        className="block  p-2 w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             type="number"
             required
             id="phoneNumber"
@@ -152,13 +154,13 @@ const SignUp = () => {
             value={phoneNumber}
           />
         </div>
-        <div className="input-container">
-          <label htmlFor="profession" className="label">
+        <div className="mb-4 ml-8">
+          <label htmlFor="profession" className="block text-sm font-medium leading-6 text-gray-900">
             Profession
           </label>
           <input
       
-            className="input"
+      className="block  p-2 w-1/2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
             type="text"
             required
             id="profession"
@@ -171,9 +173,13 @@ const SignUp = () => {
         {user && (
           <span className="message">User has been successfully Created</span>
         )}
-        <button type="submit" onClick={signUp} className="button">
+        <div className="flex ml-8  mt-4 justify-start items-center">
+
+        <button type="submit" onClick={signUp} className=" w-20 mb-2 mr-4 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
           SignUp
         </button>
+        </div>
+        </div>
       </form>
     </div>
   );

@@ -11,13 +11,12 @@ import {
 
 import {
   getFirestore,
-  doc,
-  addDoc,
+  doc, 
   getDoc,
   getDocs,
   setDoc,
   updateDoc,
-  onSnapshot,
+  arrayUnion,
   collection,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -72,12 +71,12 @@ export const createUserMessageDocumentFromAuth = async (
     userAuth,
     message
   ) => {
-    console.log(userAuth.user.email)
+    console.log(userAuth.email)
     if (!userAuth) return;
     // lets write a  pseudo code of what we need to do now
     // 1) If user doesn't exits
     // 2) create/set the document with the data from userAuth in my collection
-    const userDocRef = doc(db, "messages", userAuth.user.uid);
+    const userDocRef = doc(db, "messages", userAuth.uid);
   
     const userSnapshot = await getDoc(userDocRef);
   
@@ -105,6 +104,32 @@ export const createUserMessageDocumentFromAuth = async (
     return userDocRef;
   };
   
+  export const queryToGetMessagesFromDb=async(userAuth)=>{
+    if(!userAuth) return 
+    const uid= userAuth.uid
+
+
+    const docRef=doc(db,"messages",uid)
+    
+    try{
+      const userSnapshot= await getDoc(docRef)
+     
+  
+      if(userSnapshot.exists()){
+       
+        const messageData = userSnapshot.data();
+        const messages = [messageData];
+          return messages
+      }else{
+        return "No Such Document"
+      }
+
+    }catch(err){
+      console.log("Error querying messages:", error);
+    return null;
+    }
+    
+  }
 
 
 
