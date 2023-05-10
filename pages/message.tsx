@@ -52,7 +52,7 @@ function Message() {
  console.log(filteredArray)
  const logOut=()=>{
   dispatch(setLogOut())
-  router.replace("/login")
+  router.push("/login")
 
 
  }

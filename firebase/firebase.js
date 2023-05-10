@@ -12,6 +12,7 @@ import {
 import {
   getFirestore,
   doc, 
+  
   getDoc,
   getDocs,
   setDoc,
@@ -131,7 +132,21 @@ export const createUserMessageDocumentFromAuth = async (
     
   }
 
+export const getMailsFromDb=async()=>{
+  try {
+    const collectionRef = collection(db, "users");
+    const usersSnapshot= await getDocs(collectionRef)
+    let userMails=[]
+    if(!usersSnapshot.empty){
+      usersSnapshot.forEach((eachDoc)=>
+       userMails.push(eachDoc.data().email) )
+    }
+    return userMails
 
+  }catch(err){
+    return err
+  }
+}
 
 
 

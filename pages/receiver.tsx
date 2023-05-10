@@ -1,17 +1,16 @@
 import React, { useState ,useEffect} from "react";
 import { useSelector ,useDispatch} from "react-redux";
 import { setLogin, setMessages, setReceiverMail } from "../state/state";
-import { queryToGetMessagesFromDb } from "../firebase/firebase";
+import { queryToGetMessagesFromDb,getMailsFromDb } from "../firebase/firebase";
 
-import {
- 
-  signInAuthUserEmailAndPassword,
-} from "../firebase/firebase";
+
 import { useRouter } from "next/router";
+import CopyButton from "../components/CopyButton";
 
 const Receiver = () => {
      const user= useSelector((state:any)=>state.user)
   const [email, setEmail] = useState("");
+  const [mailAddresses,setMailAddresses]=useState([])
   
   const router=useRouter()
   const dispatch=useDispatch()
@@ -48,6 +47,10 @@ const Receiver = () => {
     }
   
   };
+  const getMails=async()=>{
+    const data= await getMailsFromDb()
+    setMailAddresses(data)
+  }
 
  
   return (
@@ -71,13 +74,27 @@ const Receiver = () => {
           />
         </div>
         
-        <div className="w-20  mb-2 ml-8 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-          <button type="submit" className="button">
+        <div className="flex ">
+          <button type="submit" className="w-20  mb-2 ml-8 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             Lets Go{" "}
+          </button>
+          <button type="submit" onClick={getMails} className="w-20  mb-2 ml-8 flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            Fetch Mails
           </button>
         
         </div>
         </div>
+      <div className="mt-4 border-2 p-4 w-1/2 rounded-lg flex justify-center">
+      
+      {mailAddresses.length===0?(<li>No Mail Addresses are found</li>):(
+        <ul className="list-decimal">
+          <h1 className="text-2xl mb-4 font-bold underline" > All Mail Addresses</h1>
+          {mailAddresses.map((each,index)=>(
+            <li key={index} className="flex"><span>{each}</span> <CopyButton text={each}/></li>
+          ))}
+      </ul>
+      )}
+      </div>
       </form>
     </div>
   );
