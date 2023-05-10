@@ -12,6 +12,14 @@ function Message() {
   const [arrayData, setArrayData] = useState([] as any);
   const user=useSelector((state:any)=>state.user )
   // const token=useSelector((state:any)=>state.token)
+  const [arrayData, setArrayData] = useState(
+    JSON.parse(localStorage.getItem("message")) || []
+  );
+  // const localStorageData = localStorage.setItem("mainStorage", arrayData);
+  // const getLocalStorageData = [
+  //   JSON.stringify(localStorage.getItem("mainStorage")),
+  // ];
+
   const router = useRouter();
   // const [resultArray,setResultArray]=useState([])
   useEffect(() => {
@@ -21,8 +29,8 @@ function Message() {
     };
     getResultFromStorage();
   }, []);
- 
-  const sendMessage = async(e: any) => {
+
+  const sendMessage =async (e: any) => {
     e.preventDefault();
     const newMessage = {
       text: message,
@@ -37,6 +45,10 @@ function Message() {
       JSON.stringify([...arrayData, message])
     );
     setMessage("");
+
+    // const setLocalData = localStorage.setItem(e.tostring(), e);
+    // const getLocalData = JSON.stringify(localStorage.getItem(e));
+    // console.log(getLocalData);
   };
 
   const handleDelete = () => {
@@ -58,7 +70,7 @@ function Message() {
         </button>
       </div>
       <ul className="w-full">
-        {arrayData.map((each, index) => (
+        {arrayData.map((each: any, index: any) => (
           <li key={index}>
             <div className="text-white   break-words font-bold hover:text-red-950 hover:px-10 bg-transparent border-2 hover:border-black rounded-lg  mx-4  hover:border-dotted  border-white px-2 my-1">
               {each}

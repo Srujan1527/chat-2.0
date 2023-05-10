@@ -7,7 +7,7 @@ export default function Home() {
   const [pass, setPass] = useState(false);
   const [color, setColor] = useState(false);
   const router = useRouter();
-  const passwordToEnter = "PottiNanni";
+  const passwordToEnter = "nani123";
 
   const { register, handleSubmit } = useForm();
 
