@@ -9,6 +9,7 @@ import { setLogOut ,setMessages} from "../state/state";
 
 
 function Message() {
+  let msgArray:any
   const [message, setMessage] = useState("");
   const dispatch=useDispatch()
   
@@ -17,7 +18,14 @@ function Message() {
   const receiverMail=useSelector((state:any)=>state.receiverMail)
   const stateMessages=useSelector((state:any)=>state.messages)
  if(!stateMessages) return
- const msgArray=stateMessages[0].messages
+ console.log(stateMessages)
+ 
+ if(stateMessages==="No Such Document"){
+   msgArray="No Such Document"
+ }else{
+
+    msgArray=stateMessages[0].messagesArray
+ }
 
 
   const router = useRouter();
@@ -37,6 +45,8 @@ function Message() {
    
     setMessage("");
     const data=await queryToGetMessagesFromDb(user)
+    console.log("line 48 executed")
+    console.log(data)
     const strigifiedData=JSON.stringify(data)
     dispatch(setMessages({
       messages:JSON.parse(strigifiedData)
@@ -47,8 +57,8 @@ function Message() {
  
   console.log(msgArray)
 
- 
- const filteredArray=msgArray.filter((each:any)=>each.receiverMail===receiverMail)
+
+ const filteredArray=(msgArray!=="No Such Document"&&  msgArray.filter((each:any)=>each.receiverMail===receiverMail))
  console.log(filteredArray)
  const logOut=()=>{
   dispatch(setLogOut())
@@ -69,7 +79,8 @@ function Message() {
          Logout
         </button>
       </div>
-      <ul className="w-full">
+      {msgArray==="No Such Document"? (<p>No Messages are present</p>):(  <ul className="w-full">
+        
         {filteredArray.map((each: any, index: any) => (
           <li key={index}>
             <div className="text-white  w-fit break-words font-bold hover:text-red-950 hover:px-10 bg-transparent border-2 hover:border-black rounded-lg  mx-4  hover:border-dotted  border-white px-2 my-1">
@@ -78,7 +89,8 @@ function Message() {
             <p className="text-xs text-blue-950 ml-10">sent to {each.receiverMail}</p>
           </li>
         ))}
-      </ul>
+      </ul>)}
+    
       <form className="absolute bottom-2 w-full flex justify-center items-center" onSubmit={sendMessage}>
         
         <input

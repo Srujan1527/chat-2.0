@@ -18,7 +18,9 @@ const Receiver = () => {
   const letsGo = async (e) => {
     e.preventDefault();
     try {
-        const data=await queryToGetMessagesFromDb(user)
+        const data=await queryToGetMessagesFromDb(user,email)
+        console.log(data)
+        console.log("receiver line 23 executed")
         const strigifiedData=JSON.stringify(data)
         dispatch(setMessages({
           messages:JSON.parse(strigifiedData)

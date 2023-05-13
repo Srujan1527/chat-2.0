@@ -19,6 +19,7 @@ import {
   updateDoc,
   arrayUnion,
   collection,
+  addDoc,
 } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 const firebaseConfig = {
@@ -72,48 +73,57 @@ export const createUserMessageDocumentFromAuth = async (
     userAuth,
     message
   ) => {
-    console.log(userAuth.email)
+   
+    
     if (!userAuth) return;
-    // lets write a  pseudo code of what we need to do now
-    // 1) If user doesn't exits
-    // 2) create/set the document with the data from userAuth in my collection
-    const userDocRef = doc(db, "messages", userAuth.uid);
-  
-    const userSnapshot = await getDoc(userDocRef);
-  
-    if (!userSnapshot.exists()) {
-      const createdAt = new Date();
+    
+   
+    
+    const collectionDocRef= doc(db,"messages",userAuth.email)
+    const collectionDocSnapsot= await getDoc(collectionDocRef)
+    if (!collectionDocSnapsot.exists()) {
+     const participants=[userAuth.email,message.receiverMail]
+     const createdAt=new Date()
    
       try {
-        await setDoc(userDocRef, {
+        await setDoc(collectionDocRef, {
           createdAt,
-         messages:[message]
+          participants
+        
         });
-      } catch (e) {
+        const userMessagesCollectionRef=collection(collectionDocRef,"usermessages")
+        const userMessagesDocRef= doc(userMessagesCollectionRef,message.receiverMail)
+        await setDoc(userMessagesDocRef,{messagesArray:arrayUnion( message)})
+    } catch (e) {
         console.log("error creating the user", e.message);
       }
     } else{ 
         try {
-            await updateDoc(userDocRef, {
-              messages: arrayUnion(message),
+          const userMessagesCollectionRef=collection(collectionDocRef,"usermessages")
+        const userMessagesDocRef= doc(userMessagesCollectionRef,message.receiverMail)
+            await updateDoc(userMessagesDocRef, {
+              messagesArray: arrayUnion(message),
             });
           } catch (e) {
             console.log("error updating the user", e.message);
           }
-    }
+     }
     
-    return userDocRef;
+    return collectionDocRef;
   };
   
-  export const queryToGetMessagesFromDb=async(userAuth)=>{
+  export const queryToGetMessagesFromDb=async(userAuth,receiverEmail)=>{
     if(!userAuth) return 
-    const uid= userAuth.uid
+    const email= userAuth.email
 
 
-    const docRef=doc(db,"messages",uid)
+     const collectionDocRef=doc(db,"messages",email,"usermessages",receiverEmail)
+     
+    // const collectionRef= collection(db,"messages")
+
     
     try{
-      const userSnapshot= await getDoc(docRef)
+      const userSnapshot= await getDoc(collectionDocRef)
      
   
       if(userSnapshot.exists()){
