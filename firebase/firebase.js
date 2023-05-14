@@ -81,6 +81,7 @@ export const createUserMessageDocumentFromAuth = async (
     
     const collectionDocRef= doc(db,"messages",userAuth.email)
     const collectionDocSnapsot= await getDoc(collectionDocRef)
+    // console.log(collectionDocSnapsot.exists())
     if (!collectionDocSnapsot.exists()) {
      const participants=[userAuth.email,message.receiverMail]
      const createdAt=new Date()
@@ -93,21 +94,35 @@ export const createUserMessageDocumentFromAuth = async (
         });
         const userMessagesCollectionRef=collection(collectionDocRef,"usermessages")
         const userMessagesDocRef= doc(userMessagesCollectionRef,message.receiverMail)
-        await setDoc(userMessagesDocRef,{messagesArray:arrayUnion( message)})
+        const userMessageSnapshot= await getDoc(userMessagesDocRef)
+        if(!userMessageSnapshot.exists()){
+
+          await setDoc(userMessagesDocRef,{messagesArray:arrayUnion( message)})
+          console.log("new user Document created")
+        }else{
+          await updateDoc(userMessagesDocRef, {
+            messagesArray: arrayUnion(message),
+          });
+          console.log("user document updated")
+        }
     } catch (e) {
         console.log("error creating the user", e.message);
       }
-    } else{ 
-        try {
-          const userMessagesCollectionRef=collection(collectionDocRef,"usermessages")
+    } else if (collectionDocSnapsot.exists()){
+      const userMessagesCollectionRef=collection(collectionDocRef,"usermessages")
         const userMessagesDocRef= doc(userMessagesCollectionRef,message.receiverMail)
-            await updateDoc(userMessagesDocRef, {
-              messagesArray: arrayUnion(message),
-            });
-          } catch (e) {
-            console.log("error updating the user", e.message);
-          }
-     }
+        const userMessageSnapshot= await getDoc(userMessagesDocRef)
+        if(!userMessageSnapshot.exists()){
+
+          await setDoc(userMessagesDocRef,{messagesArray:arrayUnion( message)})
+          console.log("new user Document created")
+        }else{
+          await updateDoc(userMessagesDocRef, {
+            messagesArray: arrayUnion(message),
+          });
+          console.log("user document updated")
+        }
+    }
     
     return collectionDocRef;
   };
@@ -118,6 +133,37 @@ export const createUserMessageDocumentFromAuth = async (
 
 
      const collectionDocRef=doc(db,"messages",email,"usermessages",receiverEmail)
+     
+    // const collectionRef= collection(db,"messages")
+
+    
+    try{
+      const userSnapshot= await getDoc(collectionDocRef)
+     
+  
+      if(userSnapshot.exists()){
+       
+        const messageData = userSnapshot.data();
+        const messages = [messageData];
+          return messages
+      }else{
+        return "No Such Document"
+      }
+
+    }catch(err){
+      console.log("Error querying messages:", error);
+    return null;
+    }
+    
+  }
+
+
+  export const queryToGetReceiverMailMessagesFromDb=async(userAuth,receiverEmail)=>{
+    if(!userAuth) return 
+    const email= userAuth.email
+
+
+     const collectionDocRef=doc(db,"messages",receiverEmail,"usermessages",email)
      
     // const collectionRef= collection(db,"messages")
 

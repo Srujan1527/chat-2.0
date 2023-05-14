@@ -1,7 +1,7 @@
 import React, { useState ,useEffect} from "react";
 import { useSelector ,useDispatch} from "react-redux";
-import { setLogin, setMessages, setReceiverMail } from "../state/state";
-import { queryToGetMessagesFromDb,getMailsFromDb } from "../firebase/firebase";
+import { setLogin, setMessages, setReceiverMail,setReceiverMessages } from "../state/state";
+import { queryToGetMessagesFromDb,getMailsFromDb,queryToGetReceiverMailMessagesFromDb } from "../firebase/firebase";
 
 
 import { useRouter } from "next/router";
@@ -9,25 +9,16 @@ import CopyButton from "../components/CopyButton";
 
 const Receiver = () => {
      const user= useSelector((state:any)=>state.user)
+     const receiverEmail=useSelector((state:any)=>state.receiverMail)
   const [email, setEmail] = useState("");
   const [mailAddresses,setMailAddresses]=useState([])
   
   const router=useRouter()
   const dispatch=useDispatch()
 
-  const letsGo = async (e) => {
+  const letsGo = async (e:any) => {
     e.preventDefault();
     try {
-        const data=await queryToGetMessagesFromDb(user,email)
-        console.log(data)
-        console.log("receiver line 23 executed")
-        const strigifiedData=JSON.stringify(data)
-        dispatch(setMessages({
-          messages:JSON.parse(strigifiedData)
-        }))
-
-
-      
       if (email==="") {
         alert("Enter the receiver's mail address")
         
@@ -35,9 +26,21 @@ const Receiver = () => {
         dispatch(setReceiverMail({
             email:email
         }))
-        router.push("/message")
-        
       }
+        const data=await queryToGetMessagesFromDb(user,email)
+        const receiverData= await queryToGetReceiverMailMessagesFromDb(user,email)
+  
+        const strigifiedData=JSON.stringify(data)
+        const stringifiedRecieverData=JSON.stringify(receiverData)
+        dispatch(setMessages({
+          messages:JSON.parse(strigifiedData)
+        }))
+        dispatch(setReceiverMessages({
+          receiverMessages:JSON.parse(stringifiedRecieverData)
+        }))
+
+        router.push("/message")
+      
       //console.log(user.email);
     } catch (error) {
       if (error.code === "auth/wrong-password") {
@@ -63,6 +66,7 @@ const Receiver = () => {
         <h1 className="mt-4 mb-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">To Whom you want to send messages</h1>
         <div className="mb-4 ml-8">
           <label htmlFor="login-email"className="block text-sm font-medium leading-6 text-gray-900 mb-4">
+           {/* eslint-disable-next-line react/no-unescaped-entities */}
             Enter the receiver's email address
           </label>
           <input

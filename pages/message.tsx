@@ -5,11 +5,14 @@ import { useSelector ,useDispatch} from "react-redux";
 import { useRouter } from "next/router";
 import { createUserMessageDocumentFromAuth,queryToGetMessagesFromDb } from "../firebase/firebase";
 import { setLogOut ,setMessages} from "../state/state";
+import { fetchSignInMethodsForEmail } from "firebase/auth";
 
 
 
 function Message() {
+  let router=useRouter()
   let msgArray:any
+  let receiverMsgArray:any
   const [message, setMessage] = useState("");
   const dispatch=useDispatch()
   
@@ -17,22 +20,34 @@ function Message() {
   const user=useSelector((state:any)=>state.user )
   const receiverMail=useSelector((state:any)=>state.receiverMail)
   const stateMessages=useSelector((state:any)=>state.messages)
+  const receiverMessages=useSelector((state:any)=>state.receiverMessages)
+  if(!receiverMessages) return
  if(!stateMessages) return
- console.log(stateMessages)
+//  console.log(stateMessages)
  
  if(stateMessages==="No Such Document"){
    msgArray="No Such Document"
- }else{
-
+ }
+ 
+ else{
+    
     msgArray=stateMessages[0].messagesArray
  }
+ if(receiverMessages==="No Such Document"){
+  receiverMsgArray="No Such Document"
+}else{
+
+  receiverMsgArray=receiverMessages[0].messagesArray
+}
 
 
-  const router = useRouter();
+const logOut=()=>{
+  router.replace("/login")
+
+}
   
-  
 
-  const sendMessage =async (e: any) => {
+const sendMessage =async (e: any) => {
     e.preventDefault();
     const newMessage = {
       text: message,
@@ -40,13 +55,14 @@ function Message() {
       email: user.email,
       receiverMail:receiverMail
         };
+      
     await createUserMessageDocumentFromAuth(user,newMessage)
-    console.log("message document created")
+
    
     setMessage("");
-    const data=await queryToGetMessagesFromDb(user)
-    console.log("line 48 executed")
-    console.log(data)
+    const data=await queryToGetMessagesFromDb(user,receiverMail)
+    // console.log("line 48 executed")
+    // console.log(data)
     const strigifiedData=JSON.stringify(data)
     dispatch(setMessages({
       messages:JSON.parse(strigifiedData)
@@ -55,21 +71,19 @@ function Message() {
   };
 
  
-  console.log(msgArray)
+  // console.log(msgArray)
+  // console.log(receiverMsgArray)
 
 
  const filteredArray=(msgArray!=="No Such Document"&&  msgArray.filter((each:any)=>each.receiverMail===receiverMail))
- console.log(filteredArray)
- const logOut=()=>{
-  dispatch(setLogOut())
-  router.push("/login")
+//  console.log(filteredArray)
 
-
- }
+ 
   return (
     <div className="bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% overflow-auto h-screen w-full">
       <div className="flex justify-center items-center">
         <h1 className="text-white hover:text-red-700 hover:my-8 text-center font-serif font-extrabold relative">
+         {/* eslint-disable-next-line react/no-unescaped-entities */}
           Welcome to Srujan's Chatting App
         </h1>
         <button
@@ -79,17 +93,36 @@ function Message() {
          Logout
         </button>
       </div>
-      {msgArray==="No Such Document"? (<p>No Messages are present</p>):(  <ul className="w-full">
-        
-        {filteredArray.map((each: any, index: any) => (
-          <li key={index}>
-            <div className="text-white  w-fit break-words font-bold hover:text-red-950 hover:px-10 bg-transparent border-2 hover:border-black rounded-lg  mx-4  hover:border-dotted  border-white px-2 my-1">
-              {each.text}
-            </div>
-            <p className="text-xs text-blue-950 ml-10">sent to {each.receiverMail}</p>
-          </li>
-        ))}
-      </ul>)}
+      <div className="flex justify-between">
+
+      <div className="flex flex-col justify-start">
+        {msgArray==="No Such Document"? (<p>No Messages are present</p>):(  <ul className="w-full">
+          
+          {filteredArray.map((each: any, index: any) => (
+            <li key={index}>
+              <div className="text-white  w-fit break-words font-bold hover:text-red-950 hover:px-10 bg-transparent border-2 hover:border-black rounded-lg  mx-4  hover:border-dotted  border-white px-2 my-1">
+                {each.text}
+              </div>
+              <p className="text-xs text-blue-950 ml-10">sent to {each.receiverMail}</p>
+            </li>
+          ))}
+        </ul>)}
+      </div>
+      <div className="flex flex-col ">
+
+        {receiverMsgArray==="No Such Document"? (<p>No Messages are present</p>):(  <ul className="w-full">
+          
+          {receiverMsgArray.map((each: any, index: any) => (
+            <li key={index}>
+              <div className="text-white  w-fit break-words font-bold hover:text-red-950 hover:px-10 bg-transparent border-2 hover:border-black rounded-lg  mx-4  hover:border-dotted  border-white px-2 my-1 mr-0">
+                {each.text}
+              </div>
+              <p className="text-xs text-blue-950 ml-10 ml-10">received from {each.receiverMail}</p>
+            </li>
+          ))}
+        </ul>)}
+      </div>
+      </div>
     
       <form className="absolute bottom-2 w-full flex justify-center items-center" onSubmit={sendMessage}>
         

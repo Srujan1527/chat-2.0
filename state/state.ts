@@ -5,6 +5,7 @@ type userObj={
         user: null | Object,
         token: null | String,
         messages: [] ,
+        receiverMessages:[],
         errorMsg: null| String,
         isError: false | Boolean,
         successMsg: null | String,
@@ -18,6 +19,7 @@ const initialState:userObj = {
   user: null,
   token: null,
   messages: [],
+  receiverMessages:[],
   errorMsg: null,
   isError: false,
   successMsg: null,
@@ -60,6 +62,9 @@ export const authSlice = createSlice({
     setMessages: (state, action) => {
       state.messages = action.payload.messages;
     },
+    setReceiverMessages: (state, action) => {
+      state.receiverMessages = action.payload.receiverMessages;
+    },
     // setAllComments: (state, action) => {
     //   state.allComments=action.payload.comments
 
@@ -83,7 +88,8 @@ export const {
   setNotIsError,
   setMessages,
   setSuccessMsg,
-  setReceiverMail
+  setReceiverMail,
+  setReceiverMessages,
   // setAllComments,
   // setPostComments,
 } = authSlice.actions;
