@@ -39,10 +39,7 @@ export const authSlice = createSlice({
     setLogOut: (state) => {
       state.user = null;
       state.token = null;
-      state.errorMsg = null;
-      state.isError = false;
-      state.messages = [];
-      state.receiverMail=null
+      
     },
     setReceiverMail:(state,action)=>{
       state.receiverMail=action.payload.email

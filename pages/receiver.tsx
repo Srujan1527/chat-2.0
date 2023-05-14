@@ -9,13 +9,18 @@ import CopyButton from "../components/CopyButton";
 
 const Receiver = () => {
      const user= useSelector((state:any)=>state.user)
-     const receiverEmail=useSelector((state:any)=>state.receiverMail)
+    //  const receiverEmail=useSelector((state:any)=>state.receiverMail)
+     const token=useSelector((state:any)=>state.token )
   const [email, setEmail] = useState("");
   const [mailAddresses,setMailAddresses]=useState([])
   
   const router=useRouter()
   const dispatch=useDispatch()
-
+  useEffect(()=>{
+    if(!token){
+      router.replace("/login")
+    }
+  },[])
   const letsGo = async (e:any) => {
     e.preventDefault();
     try {

@@ -10,6 +10,12 @@ import { fetchSignInMethodsForEmail } from "firebase/auth";
 
 
 function Message() {
+  const token=useSelector((state:any)=>state.token )
+  useEffect(()=>{
+    if(!token){
+      router.replace("/login")
+    }
+  },[])
   let router=useRouter()
   let msgArray:any
   let receiverMsgArray:any
@@ -43,6 +49,7 @@ function Message() {
 
 const logOut=()=>{
   router.replace("/login")
+  dispatch(setLogOut())
 
 }
   
@@ -71,12 +78,11 @@ const sendMessage =async (e: any) => {
   };
 
  
-  // console.log(msgArray)
-  // console.log(receiverMsgArray)
+
 
 
  const filteredArray=(msgArray!=="No Such Document"&&  msgArray.filter((each:any)=>each.receiverMail===receiverMail))
-//  console.log(filteredArray)
+
 
  
   return (
