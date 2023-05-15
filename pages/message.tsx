@@ -56,7 +56,7 @@ function Message() {
     const mainFunctions=async()=>{
       fetchMessages()
   
-        interval = setInterval(fetchMessages, 5000)
+        interval = setInterval(fetchMessages, 1000)
       
       unsubscribe= await getRealTimeMessagesFromDB()
 
