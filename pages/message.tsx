@@ -21,41 +21,51 @@ function Message() {
   const [message, setMessage] = useState("");
   const dispatch=useDispatch()
 
+
+  const fetchMessages= async()=>{
+    const data=await queryToGetMessagesFromDb(user,receiverMail)
+    const receiverData= await queryToGetReceiverMailMessagesFromDb(user,receiverMail)
+
+    const strigifiedData=JSON.stringify(data)
+    const stringifiedRecieverData=JSON.stringify(receiverData)
+    dispatch(setMessages({
+      messages:JSON.parse(strigifiedData)
+    }))
+    dispatch(setReceiverMessages({
+      receiverMessages:JSON.parse(stringifiedRecieverData)
+    }))
+  }
+
+  const getRealTimeMessagesFromDB=async()=>{
+    const unsubscribe = await getRealTimeMessages(user.email,receiverMail, (updatedMessages:any) => {
+      // Dispatch updated messages to state
+      dispatch(setMessages({
+        messages: updatedMessages,
+      }));
+    });
+
+    return unsubscribe
+  }
+
   useEffect(()=>{
     if(!token){
       router.replace("/login")
     }
-    const fetchMessages= async()=>{
-      const data=await queryToGetMessagesFromDb(user,receiverMail)
-      const receiverData= await queryToGetReceiverMailMessagesFromDb(user,receiverMail)
-
-      const strigifiedData=JSON.stringify(data)
-      const stringifiedRecieverData=JSON.stringify(receiverData)
-      dispatch(setMessages({
-        messages:JSON.parse(strigifiedData)
-      }))
-      dispatch(setReceiverMessages({
-        receiverMessages:JSON.parse(stringifiedRecieverData)
-      }))
-    }
-    fetchMessages()
-
-     const interval = setInterval(fetchMessages, 1000)
-    const getRealTimeMessagesFromDB=async()=>{
-      const unsubscribe = await getRealTimeMessages(user.email, (updatedMessages:any) => {
-        // Dispatch updated messages to state
-        dispatch(setMessages({
-          messages: updatedMessages,
-        }));
-      });
+    let unsubscribe:any
+    let interval:any
+    const mainFunctions=async()=>{
+      fetchMessages()
   
-      // Clean up listener on component unmount
-      return () => {
-        clearInterval(interval)
-        unsubscribe()
-      };
+        interval = setInterval(fetchMessages, 5000)
+      
+      unsubscribe= await getRealTimeMessagesFromDB()
+
     }
-    getRealTimeMessagesFromDB()
+    mainFunctions()
+   return () => {
+      clearInterval(interval)
+      unsubscribe
+    };
     
   },[])
   

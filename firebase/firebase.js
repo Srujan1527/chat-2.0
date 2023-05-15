@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+
 import Cookies from "js-cookie";
 import {
   getAuth,
@@ -29,15 +30,15 @@ import {
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDRDSwMYBIFIyIELRx7m1OUYqPQ5euJqHM",
-    authDomain: "chatting-app-1a437.firebaseapp.com",
-    projectId: "chatting-app-1a437",
-    storageBucket: "chatting-app-1a437.appspot.com",
-    messagingSenderId: "925716544190",
-    appId: "1:925716544190:web:597b9cc2e8ed5081253cef"
-  };
-
+  apiKey: "AIzaSyDRDSwMYBIFIyIELRx7m1OUYqPQ5euJqHM",
+  authDomain: "chatting-app-1a437.firebaseapp.com",
+  projectId: "chatting-app-1a437",
+  storageBucket: "chatting-app-1a437.appspot.com",
+  messagingSenderId: "925716544190",
+  appId: "1:925716544190:web:597b9cc2e8ed5081253cef"
+}
 // Initialize Firebase
+console.log(process.env)
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
@@ -208,8 +209,8 @@ export const getMailsFromDb=async()=>{
   }
 }
 
-export const getRealTimeMessages=async(email,callback)=>{
-    const q= query(collection(db,"messages"),where("receiverMail","==",email),orderBy("createdAt","asc"))
+export const getRealTimeMessages=async(email,receiverMail,callback)=>{
+    const q= query(collection(db,"messages"),where("receiverMail","==",receiverMail),orderBy("createdAt","asc"))
 
     const unsubscribe= onSnapshot(q,(snapshot)=>{
       const updatedMessages=snapshot.docs.map((doc)=>doc.data())

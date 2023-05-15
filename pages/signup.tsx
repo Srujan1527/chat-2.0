@@ -70,7 +70,7 @@ const SignUp = () => {
         <div className="w-1/2 border-2 p-4 rounded-lg ">
 
         <div className="heading-container">
-          <h2 className="mt-4 mb-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Don't have an account</h2>
+          <h2 className="mt-4 mb-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Do not have an account</h2>
           <span className="mt-4 ml-8  mb-14 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign up with your email</span>
         </div>
         <div className="mb-4 ml-8">
