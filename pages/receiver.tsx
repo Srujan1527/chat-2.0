@@ -32,17 +32,17 @@ const Receiver = () => {
             email:email
         }))
       }
-        const data=await queryToGetMessagesFromDb(user,email)
-        const receiverData= await queryToGetReceiverMailMessagesFromDb(user,email)
+        // const data=await queryToGetMessagesFromDb(user,email)
+        // const receiverData= await queryToGetReceiverMailMessagesFromDb(user,email)
   
-        const strigifiedData=JSON.stringify(data)
-        const stringifiedRecieverData=JSON.stringify(receiverData)
-        dispatch(setMessages({
-          messages:JSON.parse(strigifiedData)
-        }))
-        dispatch(setReceiverMessages({
-          receiverMessages:JSON.parse(stringifiedRecieverData)
-        }))
+        // const strigifiedData=JSON.stringify(data)
+        // const stringifiedRecieverData=JSON.stringify(receiverData)
+        // dispatch(setMessages({
+        //   messages:JSON.parse(strigifiedData)
+        // }))
+        // dispatch(setReceiverMessages({
+        //   receiverMessages:JSON.parse(stringifiedRecieverData)
+        // }))
 
         router.push("/message")
       

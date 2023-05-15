@@ -3,32 +3,68 @@ import localStorage from "localStorage";
 import { useSelector ,useDispatch} from "react-redux";
 
 import { useRouter } from "next/router";
-import { createUserMessageDocumentFromAuth,queryToGetMessagesFromDb } from "../firebase/firebase";
-import { setLogOut ,setMessages} from "../state/state";
-import { fetchSignInMethodsForEmail } from "firebase/auth";
+import { createUserMessageDocumentFromAuth,queryToGetMessagesFromDb ,queryToGetReceiverMailMessagesFromDb,getRealTimeMessages,signOutUser} from "../firebase/firebase";
+import { setLogOut ,setMessages,setReceiverMessages} from "../state/state";
+
 
 
 
 function Message() {
   const token=useSelector((state:any)=>state.token )
-  useEffect(()=>{
-    if(!token){
-      router.replace("/login")
-    }
-  },[])
+  const user=useSelector((state:any)=>state.user )
+  const receiverMail=useSelector((state:any)=>state.receiverMail)
+  const stateMessages=useSelector((state:any)=>state.messages)
+  const receiverMessages=useSelector((state:any)=>state.receiverMessages)
   let router=useRouter()
   let msgArray:any
   let receiverMsgArray:any
   const [message, setMessage] = useState("");
   const dispatch=useDispatch()
+
+  useEffect(()=>{
+    if(!token){
+      router.replace("/login")
+    }
+    const fetchMessages= async()=>{
+      const data=await queryToGetMessagesFromDb(user,receiverMail)
+      const receiverData= await queryToGetReceiverMailMessagesFromDb(user,receiverMail)
+
+      const strigifiedData=JSON.stringify(data)
+      const stringifiedRecieverData=JSON.stringify(receiverData)
+      dispatch(setMessages({
+        messages:JSON.parse(strigifiedData)
+      }))
+      dispatch(setReceiverMessages({
+        receiverMessages:JSON.parse(stringifiedRecieverData)
+      }))
+    }
+    fetchMessages()
+
+     const interval = setInterval(fetchMessages, 1000)
+    const getRealTimeMessagesFromDB=async()=>{
+      const unsubscribe = await getRealTimeMessages(user.email, (updatedMessages:any) => {
+        // Dispatch updated messages to state
+        dispatch(setMessages({
+          messages: updatedMessages,
+        }));
+      });
+  
+      // Clean up listener on component unmount
+      return () => {
+        clearInterval(interval)
+        unsubscribe()
+      };
+    }
+    getRealTimeMessagesFromDB()
+    
+  },[])
   
 
-  const user=useSelector((state:any)=>state.user )
-  const receiverMail=useSelector((state:any)=>state.receiverMail)
-  const stateMessages=useSelector((state:any)=>state.messages)
-  const receiverMessages=useSelector((state:any)=>state.receiverMessages)
-  if(!receiverMessages) return
- if(!stateMessages) return
+ 
+
+  if (!receiverMessages || receiverMessages.length === 0) return null;
+  if (!stateMessages || stateMessages.length === 0) return null;
+  
 //  console.log(stateMessages)
  
  if(stateMessages==="No Such Document"){
@@ -36,7 +72,7 @@ function Message() {
  }
  
  else{
-    
+    console.log(stateMessages)
     msgArray=stateMessages[0].messagesArray
  }
  if(receiverMessages==="No Such Document"){
@@ -47,7 +83,8 @@ function Message() {
 }
 
 
-const logOut=()=>{
+const logOut=async()=>{
+  await  signOutUser()
   router.replace("/login")
   dispatch(setLogOut())
 
@@ -82,8 +119,7 @@ const sendMessage =async (e: any) => {
 
 
  const filteredArray=(msgArray!=="No Such Document"&&  msgArray.filter((each:any)=>each.receiverMail===receiverMail))
-
-
+ 
  
   return (
     <div className="bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% overflow-auto h-screen w-full">
@@ -132,7 +168,7 @@ const sendMessage =async (e: any) => {
                   {each.text}
                 </div>
                 <p className="text-xs text-blue-950 ml-10">
-                  received from {each.receiverMail}
+                  received from {each.email}
                 </p>
                 
               </li>
@@ -150,6 +186,7 @@ const sendMessage =async (e: any) => {
         className="block p-2 w-3/4 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
         placeholder="Type a message"
         value={message}
+        required
         onChange={(e) => setMessage(e.target.value)}
       />
       <button

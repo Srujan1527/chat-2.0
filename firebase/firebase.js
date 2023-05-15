@@ -19,9 +19,15 @@ import {
   updateDoc,
   arrayUnion,
   collection,
-  addDoc,
+  query,
+  where,
+  onSnapshot,
+  orderBy,
+  
 } from "firebase/firestore";
+
 import { getStorage } from "firebase/storage";
+
 const firebaseConfig = {
     apiKey: "AIzaSyDRDSwMYBIFIyIELRx7m1OUYqPQ5euJqHM",
     authDomain: "chatting-app-1a437.firebaseapp.com",
@@ -43,9 +49,7 @@ export const createUserDocumentFromAuth = async (
   additionalInformation
 ) => {
   if (!userAuth) return;
-  // lets write a  pseudo code of what we need to do now
-  // 1) If user doesn't exits
-  // 2) create/set the document with the data from userAuth in my collection
+
   const userDocRef = doc(db, "users", userAuth.uid);
 
   const userSnapshot = await getDoc(userDocRef);
@@ -204,6 +208,15 @@ export const getMailsFromDb=async()=>{
   }
 }
 
+export const getRealTimeMessages=async(email,callback)=>{
+    const q= query(collection(db,"messages"),where("receiverMail","==",email),orderBy("createdAt","asc"))
+
+    const unsubscribe= onSnapshot(q,(snapshot)=>{
+      const updatedMessages=snapshot.docs.map((doc)=>doc.data())
+      callback(updatedMessages)
+    })
+    return unsubscribe
+}
 
 
 export const createContentDocumentFromAuth = async (
@@ -245,25 +258,10 @@ export const signInAuthUserEmailAndPassword = async (email, password) => {
 
 export const signOutUser = async () => await signOut(auth);
 
-export const onAuthStateChangedListener = (callback) => {
-  onAuthStateChanged(auth, callback);
-};
 
-export const getDocumentFromCollection = async (id) => {
-  const docRef = doc(db, "users", id);
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    return docSnap.data();
-  } else {
-    return "No Such Document";
-  }
-};
 
-export const getAllDocumentsFromCollection = async () => {
-  const collectionRef = collection(db, "users");
-  const docsSnap = await getDocs(collectionRef);
-  
-  return docsSnap;
-};
+
+
+
 
 export const auth = getAuth(app);
